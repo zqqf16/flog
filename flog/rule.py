@@ -131,11 +131,11 @@ class Rule:
             if self.msg_match != None:
                 return self.msg_match.render(env)
         elif state == MatchingResult.State.Start:
-            if self.msg_start != None:
-                return self.msg_start.render(env)
+            if temp := self.msg_start or self.msg_match:
+                return temp.render(env)
         elif state == MatchingResult.State.End:
-            if self.msg_end != None:
-                return self.msg_end.render(env)
+            if temp := self.msg_end or self.msg_match:
+                return temp.render(env)
 
     @classmethod
     def load(cls, path):
