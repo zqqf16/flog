@@ -30,7 +30,7 @@ class MatchingContext:
 
     @property
     def content(self) -> str:
-        return "".join(self.lines)
+        return "".join(self.lines).strip('\n')
 
     def render_context(self, state):
         return {
