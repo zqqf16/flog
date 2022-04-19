@@ -65,13 +65,14 @@ class Engine:
             context.update(result, line)
             self.stack.pop()
 
-        message = rule.message(context, result)
-        output = rule.filter(line)
-        self.show(message)
-        self.write(output)
+        if message := rule.message(context, result):
+            self.show(message)
+
+        if output := rule.filter(line):
+            self.write(output)
 
     def show(self, message: str):
-        #print(message)
+        print(message)
         pass
 
     def write(self, content: str):

@@ -1,5 +1,6 @@
 import re
 import yaml
+import jinja2
 
 from enum import Enum
 from dataclasses import dataclass
@@ -31,6 +32,13 @@ class MatchingContext:
     def content(self) -> str:
         return "".join(self.lines)
 
+    def render_context(self, state):
+        return {
+            'lines': self.lines,
+            'content': self.content,
+            'captures': self.captureGroups.get(state, [])
+        }
+
 class Rule:
     class Action(Enum):
         Drop = 0
@@ -42,9 +50,17 @@ class Rule:
         self.re_start = None
         self.re_end = None
         self.children = None
-        self.msg_match = config.get('message')
-        self.msg_start = config.get('start_message')
-        self.msg_end = config.get('end_message')
+
+        self.msg_match = None
+        self.msg_start = None
+        self.msg_end = None
+
+        if msg := config.get('message'):
+            self.msg_match = jinja2.Template(msg)
+        if msg := config.get('start_message'):
+            self.msg_start = jinja2.Template(msg)
+        if msg := config.get('end_message'):
+            self.msg_end = jinja2.Template(msg)
 
         if match := config.get('match'):
             self.re_match = re.compile(match)
@@ -108,13 +124,18 @@ class Rule:
         elif self.action == Rule.Action.Bypass:
             return line
 
-    def message(self, context, state) -> Optional[str]:
+    def message(self, context, result) -> Optional[str]:
+        state = result.state
+        env = context.render_context(state)
         if state == MatchingResult.State.Match:
-            return self.message
+            if self.msg_match != None:
+                return self.msg_match.render(env)
         elif state == MatchingResult.State.Start:
-            return self.msg_start
+            if self.msg_start != None:
+                return self.msg_start.render(env)
         elif state == MatchingResult.State.End:
-            return self.msg_end
+            if self.msg_end != None:
+                return self.msg_end.render(env)
 
     @classmethod
     def load(cls, path):

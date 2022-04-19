@@ -1,6 +1,7 @@
+from contextvars import Context
 import pytest
 
-from flog.rule import MatchingResult, Rule
+from flog.rule import MatchingContext, MatchingResult, Rule
 
 
 def test_rule_init():
@@ -12,7 +13,6 @@ def test_rule_init():
     rule = Rule(config)
     assert rule.name == 'test'
     assert rule.re_match.pattern == '^test'
-    assert rule.msg_match == 'test'
     assert rule.re_start == None
     assert rule.re_end == None
     assert rule.action == Rule.Action.Bypass
@@ -91,3 +91,20 @@ def test_rule_nested():
     assert nested.child.name == 'child'
 
     assert rule.match('match balabala', started=True).child.name == 'match'
+
+
+def test_rule_message():
+    rule = Rule({
+        'name': 'test',
+        'match': '(\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{3}).*test',
+        'message': '{{ content }} {{ lines|length }} {{ captures|length }} {{ captures[0] }}',
+    })
+
+    assert rule.msg_match != None
+
+    content = '2022-04-08 16:52:37.152 this is a test message'
+    result = rule.match(content)
+    ctx = MatchingContext(result, content)
+
+    msg = rule.message(ctx, result)
+    assert msg == content+' 1 1'+' 2022-04-08 16:52:37.152'
