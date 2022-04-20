@@ -1,4 +1,3 @@
-from contextvars import Context
 import pytest
 
 from flog.rule import MatchingContext, MatchingResult, Rule
