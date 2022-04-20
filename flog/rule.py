@@ -148,6 +148,8 @@ class Rule:
         for key, value in self.global_context.items():
             if match := value.search(content):
                 env[key] = match.group()
+            else:
+                env[key] = ''
 
         return env
 
