@@ -108,3 +108,26 @@ def test_rule_message():
 
     msg = rule.message(ctx, result)
     assert msg == content+' 1 1'+' 2022-04-08 16:52:37.152'
+    
+def test_rule_loader(tmpdir):
+    rule = tmpdir.join('rule.yaml')
+    rule.write(r'''
+name: test
+context:
+  timestamp: "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{3}"
+patterns:
+  - match: "hello ([^:]*):"
+    message: "{{ timestamp }}: {{ captures[0] }}"
+''')
+
+    rules = Rule.load(str(rule))
+    rule = rules[0]
+
+    assert rule.global_context['timestamp'].pattern == '\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{3}'
+
+    content = '2022-04-08 16:52:37.152 hello world: this is a test message'
+    result = rule.match(content)
+    ctx = MatchingContext(result, content)
+
+    msg = rule.message(ctx, result)
+    assert msg == '2022-04-08 16:52:37.152: world'

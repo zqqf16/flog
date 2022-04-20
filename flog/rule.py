@@ -44,12 +44,14 @@ class Rule:
         Drop = 0
         Bypass = 1
 
-    def __init__(self, config):
+    def __init__(self, config, global_context=None):
         self.name = config.get('name', "Anonymous")
+        self.global_context = global_context
+        self.children = None
+
         self.re_match = None
         self.re_start = None
         self.re_end = None
-        self.children = None
 
         self.msg_match = None
         self.msg_start = None
@@ -126,7 +128,7 @@ class Rule:
 
     def message(self, context, result) -> Optional[str]:
         state = result.state
-        env = context.render_context(state)
+        env = self.__render_env(context, result)
         if state == MatchingResult.State.Match:
             if self.msg_match != None:
                 return self.msg_match.render(env)
@@ -137,11 +139,32 @@ class Rule:
             if temp := self.msg_end or self.msg_match:
                 return temp.render(env)
 
+    def __render_env(self, context, result):
+        env = context.render_context(result.state)
+        if not self.global_context:
+            return env
+        
+        content = context.content
+        for key, value in self.global_context.items():
+            if match := value.search(content):
+                env[key] = match.group()
+
+        return env
+
     @classmethod
     def load(cls, path):
         rules = []
         with open(path) as f:
             data = yaml.load(f, Loader=yaml.FullLoader)
-            for item in data['patterns']:
-                rules.append(Rule(item))
+
+        global_context = None
+        if context := data.get('context', None):
+            global_context = {}
+            for key, value in context.items():
+                if key in ["lines", "captures", "content"]:
+                    raise AttributeError(f'Invalid context key: {key}')
+                global_context[key] = re.compile(value)
+
+        for item in data['patterns']:
+            rules.append(Rule(item, global_context))
         return rules

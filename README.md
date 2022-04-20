@@ -34,41 +34,41 @@ flog -r rules.yaml /path/to/your.log -o /path/to/filtered.log
 ### 基础
 
 ```yaml
-- name: Rule Name #规则集名称
-- patterns: #规则列表
-    # 如果匹配到 ^Hello，就输出 Match Hello
-    - match: "^Hello"
-      message: "Match Hello"
+name: Rule Name #规则集名称
+patterns: #规则列表
+  # 如果匹配到 ^Hello，就输出 Match Hello
+  - match: "^Hello"
+    message: "Match Hello"
     
-    # 多行模式，以^Hello开头，以^End结束
-    - start: "^Hello"
-      end: "^End"
-      message: "Match Hello to End"
+  # 多行模式，以^Hello开头，以^End结束
+  - start: "^Hello"
+    end: "^End"
+    message: "Match Hello to End"
 
-    - start: "Start"
-      start_message: "Match Start" #匹配开始时显示的信息
-      end: "End"
-      end_messagee: "Match End" #结束时显示的信息
+  - start: "Start"
+    start_message: "Match Start" #匹配开始时显示的信息
+    end: "End"
+    end_messagee: "Match End" #结束时显示的信息
 ```
 
 纯过滤模式
 
 ```yaml
-- name: Rule Name
-- patterns:
-    - match: "^Hello" #删除日志中以Hello开头的行
-    - start: "^Hello" #多行模式，删除从Hello到End中间的所有内容
-      end: "^End"
+name: Rule Name
+patterns:
+  - match: "^Hello" #删除日志中以Hello开头的行
+  - start: "^Hello" #多行模式，删除从Hello到End中间的所有内容
+    end: "^End"
 ```
 
 过滤日志内容，并输出信息
 
 ```yaml
-- name: Rule Name
-- patterns:
-    - match: "^Hello" #删除日志中以Hello开头的行
-      message: "Match Hello"
-      action: drop # drop：删除此行日志，bypass：保留此行日志（如果有message字段，默认为bypass；如果没有message字段，默认为drop）
+name: Rule Name
+patterns:
+  - match: "^Hello" #删除日志中以Hello开头的行
+    message: "Match Hello"
+    action: drop # drop：删除此行日志，bypass：保留此行日志（如果有message字段，默认为bypass；如果没有message字段，默认为drop）
 ```
 
 ### message
@@ -84,13 +84,32 @@ flog -r rules.yaml /path/to/your.log -o /path/to/filtered.log
 例如：
 
 ```yaml
-- name: Rule Name
-- patterns:
-    - match: "^Hello (.*)"
-      message: "Match {{captures[0]}}"
+name: Rule Name
+patterns:
+  - match: "^Hello (.*)"
+    message: "Match {{captures[0]}}"
 ```
 
 如果遇到："Hello lilei"，则会在终端输出"Match lilei"
+
+
+#### context
+
+可以把日志中频繁出现的正则提炼出来，放到`context`字段下，避免复制粘贴多次，例如:
+
+```yaml
+name: Rule Name
+
+context:
+  timestamp: "\\d{4}-\\d{2}-\\d{2} \\d{2}:\\d{2}:\\d{2}.\\d{3}"
+patterns:
+  - match: "hello ([^:]*):"
+    message: "{{ timestamp }} - {{ captures[0] }}"
+```
+
+输入：`2022-04-08 16:52:37.152 hello world: this is a test message`
+输出：`2022-04-08 16:52:37.152 - world`
+
 
 ## License
 
