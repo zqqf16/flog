@@ -59,7 +59,7 @@ patterns: #规则列表
     end_messagee: "Match End" #结束时显示的信息
 ```
 
-纯过滤模式
+#### 纯过滤模式
 
 ```yaml
 name: Rule Name
@@ -69,7 +69,7 @@ patterns:
     end: "^End"
 ```
 
-过滤日志内容，并输出信息
+#### 过滤日志内容，并输出信息
 
 ```yaml
 name: Rule Name
@@ -77,6 +77,35 @@ patterns:
   - match: "^Hello" #删除日志中以Hello开头的行
     message: "Match Hello"
     action: drop #删除此行日志
+```
+
+#### 规则嵌套
+
+仅多行模式支持规则嵌套。
+
+```yaml
+name: Rule
+patterns:
+	- start: "^Response.*{$"
+		end: "^}"
+		patterns:
+			- match: "username = (.*)"
+				message: "Current user: {{ capture[0] }}"
+```
+
+输入：
+
+```
+Login Response {
+	username = zorro
+	userid = 123456
+}
+```
+
+输出：
+
+```
+Current user: zorro
 ```
 
 ### action
