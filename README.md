@@ -90,7 +90,7 @@ patterns:
 
 ### message
 
-`message` 字段用于在标准输出显示信息，并且支持[jinja2](https://jinja.palletsprojects.com/en/3.1.x/)模版语法来自定义输出信息内容，通过它可以实现一些简单的日志分析功能。
+`message` 字段用于在标准输出显示信息，并且支持 [Jinja](https://jinja.palletsprojects.com/en/3.1.x/) 模版语法来自定义输出信息内容，通过它可以实现一些简单的日志分析功能。
 
 目前支持的参数有:
 
@@ -127,6 +127,21 @@ patterns:
 输入：`2022-04-08 16:52:37.152 hello world: this is a test message`  
 输出：`2022-04-08 16:52:37.152 - world`
 
+#### 高亮
+
+内置了一些 **Jinja** 的 [filter](https://jinja.palletsprojects.com/en/3.1.x/templates/#filters)，可以在终端高亮输出结果，目前包含：
+
+`red`, `green`, `yellow`, `blue`, `purple`, `cyan`, `white`, `bold`, `underline`, `blink`, `reverse`, `strike`
+
+例如：
+```yaml
+patterns:
+  - match: "Error: (.*)"
+    message: "{{ captures[0] | red }}"
+```
+
+输入：`Error: file not found`   
+输出：<font color="red">file not found</font> 
 
 ## License
 

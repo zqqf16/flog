@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="flog",
-    version="0.0.3",
+    version="0.0.4",
     author="zqqf16",
     author_email="zqqf16@gmail.com",
     description="Yet another log parser",

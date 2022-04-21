@@ -6,6 +6,11 @@ from enum import Enum
 from dataclasses import dataclass
 from typing import List, Optional
 
+from .render import filters
+
+for filter_name, filter_func in filters.items():
+    jinja2.filters.FILTERS[filter_name] = filter_func
+
 @dataclass
 class MatchingResult:
     class State(Enum):
