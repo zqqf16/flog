@@ -27,7 +27,13 @@ flog -r rules.yaml /path/to/your.log -o /path/to/filtered.log
 其中：
 - `rules.yaml`是规则文件
 - `/path/to/your.log`是原始的日志文件
-- `/path/to/filtered.log`是过滤后的日志文件
+- `/path/to/filtered.log`是过滤后的日志文件，可以为空，会自动生成一个。
+
+如果不需要过滤日志内容，只需显示分析结果，可以直接：
+
+```shell
+flog -r rules.yaml /path/to/your.log
+```
 
 ## 规则语法
 
@@ -36,14 +42,16 @@ flog -r rules.yaml /path/to/your.log -o /path/to/filtered.log
 ```yaml
 name: Rule Name #规则集名称
 patterns: #规则列表
-  # 如果匹配到 ^Hello，就输出 Match Hello
+  # 单行模式，如果匹配到 ^Hello，就输出 Match Hello
   - match: "^Hello"
     message: "Match Hello"
+    action: bypass #保留此条日志（会输出到-o指定的文件中）
     
-  # 多行模式，以^Hello开头，以^End结束
+  # 多行模式，以^Hello开头，以^End结束，输出 Match Hello to End，并丢弃此条日志
   - start: "^Hello"
     end: "^End"
     message: "Match Hello to End"
+    action: drop
 
   - start: "Start"
     start_message: "Match Start" #匹配开始时显示的信息
@@ -68,8 +76,17 @@ name: Rule Name
 patterns:
   - match: "^Hello" #删除日志中以Hello开头的行
     message: "Match Hello"
-    action: drop # drop：删除此行日志，bypass：保留此行日志（如果有message字段，默认为bypass；如果没有message字段，默认为drop）
+    action: drop #删除此行日志
 ```
+
+### action
+
+`action`字段主要用于控制是否过滤此条日志，仅在指定 `-o` 参数后生效。  取值范围：【**drop**，**bypass**】。    
+
+为了简化纯过滤类型规则的书写，action默认值的规则如下：
+
+- 如果规则中包含`message`、`start_message`、`end_message`字段，action默认为**bypass**，即输出到文件中。
+- 如果规则中不包含message相关字段，action默认为**drop**，变成一条纯过滤规则。
 
 ### message
 
@@ -107,7 +124,7 @@ patterns:
     message: "{{ timestamp }} - {{ captures[0] }}"
 ```
 
-输入：`2022-04-08 16:52:37.152 hello world: this is a test message`
+输入：`2022-04-08 16:52:37.152 hello world: this is a test message`  
 输出：`2022-04-08 16:52:37.152 - world`
 
 
