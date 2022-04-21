@@ -86,19 +86,19 @@ patterns:
 ```yaml
 name: Rule
 patterns:
-	- start: "^Response.*{$"
-		end: "^}"
-		patterns:
-			- match: "username = (.*)"
-				message: "Current user: {{ capture[0] }}"
+  - start: "^Response.*{$"
+    end: "^}"
+    patterns:
+      - match: "username = (.*)"
+        message: "Current user: {{ capture[0] }}"
 ```
 
 输入：
 
 ```
 Login Response {
-	username = zorro
-	userid = 123456
+  username = zorro
+  userid = 123456
 }
 ```
 
