@@ -160,7 +160,7 @@ patterns:
 
 内置了一些 **Jinja** 的 [filter](https://jinja.palletsprojects.com/en/3.1.x/templates/#filters)，可以在终端高亮输出结果，目前包含：
 
-`red`, `green`, `yellow`, `blue`, `purple`, `cyan`, `white`, `bold`, `underline`, `blink`, `reverse`, `strike`
+`black`, `red`, `green`, `yellow`, `blue`, `purple`, `cyan`, `white`, `bold`, `light`, `italic`, `underline`, `blink`, `reverse`, `strike`
 
 例如：
 ```yaml
