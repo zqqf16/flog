@@ -157,21 +157,3 @@ class Rule:
                 env[key] = ''
 
         return env
-
-    @classmethod
-    def load(cls, path):
-        rules = []
-        with open(path) as f:
-            data = yaml.load(f, Loader=yaml.FullLoader)
-
-        global_context = None
-        if context := data.get('context', None):
-            global_context = {}
-            for key, value in context.items():
-                if key in ["lines", "captures", "content"]:
-                    raise AttributeError(f'Invalid context key: {key}')
-                global_context[key] = re.compile(value)
-
-        for item in data['patterns']:
-            rules.append(Rule(item, global_context))
-        return rules

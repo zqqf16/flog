@@ -5,6 +5,7 @@ from ast import arg
 
 from .rule import *
 from .engine import *
+from .loader import *
 
 def cmd():
     parser = argparse.ArgumentParser(description='Process logs.')
@@ -16,7 +17,7 @@ def cmd():
 def main():
     args = cmd()
 
-    rules = Rule.load(args.rule)
+    rules = Loader(args.rule).load()
     engine = Engine(rules)
 
     output = None
