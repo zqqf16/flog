@@ -186,13 +186,13 @@ include: base #引入同级目录下的 base.yaml 或 base.yml
 ```yaml
 name: Rule
 include:
-	- base
-	- ../base
-	- base.yaml
-	- base/base1
-	- base/base2.yaml
-	- ../base.yaml
-	- /usr/etc/rules/base.yml
+  - base
+  - ../base
+  - base.yaml
+  - base/base1
+  - base/base2.yaml
+  - ../base.yaml
+  - /usr/etc/rules/base.yml
 ```
 
 ` context`、`patterns`会按照引用顺序依次合并，如果有同名的context，后面的会替换之前的。
