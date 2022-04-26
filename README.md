@@ -21,13 +21,13 @@ python setup.py install
 ### 基础用法
 
 ```shell
-flog -r rules.yaml /path/to/your.log -o /path/to/filtered.log
+flog -r rules.yaml /path/to/1.log /path/to/2.log /path/to/3.log -o /path/to/filtered.log
 ```
 
 其中：
 - `rules.yaml`是规则文件
-- `/path/to/your.log`是原始的日志文件
-- `/path/to/filtered.log`是过滤后的日志文件，可以为空，会自动生成一个。
+- `/path/to/x.log`是原始的日志文件，支持一次输入多个日志文件。
+- `/path/to/filtered.log`是过滤后的日志文件，如果不指定文件名（直接一个`-o`），会自动生成一个。
 
 如果不需要过滤日志内容，只需显示分析结果，可以直接：
 
