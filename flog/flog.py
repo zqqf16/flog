@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import argparse
-from ast import arg
 
 from .rule import *
 from .engine import *
