@@ -30,4 +30,4 @@ def main():
         engine.run(src, output, idx > 0)
     
     if output:
-        print('Output file:', output)
+        print(f'Output file: {output}')
